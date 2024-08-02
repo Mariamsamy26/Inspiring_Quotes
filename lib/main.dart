@@ -11,7 +11,8 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  List<Map<String, String>> get favoriteQuoteIds => [];
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
           initialRoute:  HomeScreen.routeName,
           routes: {
             HomeScreen.routeName: (c) => HomeScreen(),
-            FavoriteScreen.routeName: (C) => FavoriteScreen(),
+            FavoriteScreen.routeName: (C) => FavoriteScreen(favoriteQuoteIds),
           },
         );
       },

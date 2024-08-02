@@ -1,13 +1,14 @@
 import 'package:animated_hint_textfield/animated_hint_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../shared/components/Custom_ElevatedButton.dart';
 import '../shared/components/Custom_ElevatedButtonIcon.dart';
 import '../shared/style/color_manager.dart';
 import 'homeScreen.dart';
 
 class FavoriteScreen extends StatefulWidget {
   static const String routeName = 'favoritescreen Screen';
+
+  FavoriteScreen(List<Map<String, String>> favoriteQuoteIds);
 
   @override
   State<FavoriteScreen> createState() => _FavoriteScreenState();

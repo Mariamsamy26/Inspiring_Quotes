@@ -17,6 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, String>? quote;
   bool isLoading = true;
   bool isFavorite = false;
+  List<Map<String, String>> favoriteQuoteIds = [];
+  String? currentQuoteId;
 
   @override
   void initState() {
@@ -27,10 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> getRandomQuote() async {
     var quotesApi = QuotesApi();
     try {
-      var fetchedQuote = await quotesApi.getRandom(); // Updated function call
+      var fetchedQuote = await quotesApi.getRandom();
       setState(() {
         quote = fetchedQuote;
         isLoading = false;
+        isFavorite=false;
       });
     } catch (e) {
       print('Failed to load quotes due to: $e');
@@ -45,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: ColorManager.colorback,
       ),
       child: Column(
@@ -56,13 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => FavoriteScreen()),
+                MaterialPageRoute(builder: (context) => FavoriteScreen(favoriteQuoteIds)),
               );
             },
-          ),
+          ),//to go fav screen
           Container(
-            margin: EdgeInsets.all(15),
-            padding: EdgeInsets.all(5),
+            margin: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(9),
@@ -70,28 +73,41 @@ class _HomeScreenState extends State<HomeScreen> {
             child: isLoading
                 ? CircularProgressIndicator()
                 : quote != null
-                ? Column(
-              children: [
-                CustomQuoteHome(
-                  icon: isFavorite
-                      ? Icons.favorite
-                      : Icons.favorite_border_outlined,
-                  textQuote: quote!['content'] !,
-                  textAuthor: quote!['authorSlug'] !,
-                  onPressed: () {
-                    setState(() {
-                      getRandomQuote();
-                    });
-                  },
-                  onPressedFav: () {
-                    setState(() {
-                      isFavorite = !isFavorite; // Toggle the favorite state
-                    });
-                  },
-                ),
-              ],
-            )
-                : Text('No quotes available.'),
+                    ? Column(
+                        children: [
+                          CustomQuoteHome(
+                            textQuote: quote!['content']!,
+                            textAuthor: quote!['authorSlug']!,
+                            icon: isFavorite
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
+                            onPressed: () {
+                              setState(() {
+                                getRandomQuote();
+                              });
+                            },
+                            onPressedFav: () {
+                              setState(() {
+                                isFavorite = !isFavorite;
+
+                                // Add or remove the quote from favorites
+                                if (isFavorite) {
+                                  // Add quote to favorites
+                                  favoriteQuoteIds.add(quote!);
+                                } else {
+                                  // Remove quote from favorites
+                                  favoriteQuoteIds.removeWhere(
+                                        (element) => element['id'] == quote!['id'],
+                                  );
+                                }
+                                print(isFavorite);
+                                print(favoriteQuoteIds);
+                              });
+                            },
+                          ),
+                        ],
+                      )
+                    : Text('No quotes available.'),
           ),
         ],
       ),

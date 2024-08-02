@@ -4,8 +4,8 @@ import '../style/color_manager.dart';
 import 'Custom_ElevatedButton.dart';
 import 'Custom_ElevatedButtonIcon.dart';
 
-class CustomQuoteHome extends StatelessWidget {
-  final String textQuote ;
+class CustomQuoteFav extends StatelessWidget {
+  final String textQuote;
   final String textAuthor;
   final void Function()? onPressed;
   final Future<void>? Function()? onPressedFav;
@@ -17,7 +17,7 @@ class CustomQuoteHome extends StatelessWidget {
   final Color coloricon;
   final Color colorText;
 
-  CustomQuoteHome({
+  CustomQuoteFav({
     required this.icon,
     required this.textQuote,
     required this.textAuthor,
@@ -65,25 +65,16 @@ class CustomQuoteHome extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            children: [
-              Expanded(
-                child: CustomElevatedButton(
-                    text: 'Generate Another Quote', onPressed: onPressed),
-                flex: 2,
-              ),
-              Expanded(
-                child: CustomElevatedButtonIcon(
-                  colorBorder: ColorManager.Colorpurple,
-                  colorButton: ColorManager.colorWhit,
-                  colorText: ColorManager.Colorpurple,
-                  icon: icon,
-                  text: '',
-                  onPressed: onPressedFav,
-                ),
-                flex: 1,
-              ),
-            ],
+          Expanded(
+            child: CustomElevatedButtonIcon(
+              colorBorder: ColorManager.Colorpurple,
+              colorButton: ColorManager.colorWhit,
+              colorText: ColorManager.Colorpurple,
+              icon: icon,
+              text: 'Remove From Favorite',
+              onPressed: onPressedFav,
+            ),
+            flex: 1,
           ),
         ],
       ),

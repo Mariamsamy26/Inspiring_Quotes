@@ -7,7 +7,6 @@ import 'Custom_ElevatedButtonIcon.dart';
 class CustomQuoteFav extends StatelessWidget {
   final String textQuote;
   final String textAuthor;
-  final void Function()? onPressed;
   final Future<void>? Function()? onPressedFav;
   final double width;
   final double height;
@@ -21,7 +20,6 @@ class CustomQuoteFav extends StatelessWidget {
     required this.icon,
     required this.textQuote,
     required this.textAuthor,
-    required this.onPressed,
     required this.onPressedFav,
     this.height = 62,
     this.width = 327,
@@ -65,16 +63,13 @@ class CustomQuoteFav extends StatelessWidget {
               ),
             ],
           ),
-          Expanded(
-            child: CustomElevatedButtonIcon(
-              colorBorder: ColorManager.Colorpurple,
-              colorButton: ColorManager.colorWhit,
-              colorText: ColorManager.Colorpurple,
-              icon: icon,
-              text: 'Remove From Favorite',
-              onPressed: onPressedFav,
-            ),
-            flex: 1,
+          CustomElevatedButtonIcon(
+            colorBorder: ColorManager.Colorpurple,
+            colorButton: ColorManager.colorWhit,
+            colorText: ColorManager.Colorpurple,
+            icon: icon,
+            text: 'Remove From Favorite',
+            onPressed: onPressedFav,
           ),
         ],
       ),

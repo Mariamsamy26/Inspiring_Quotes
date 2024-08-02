@@ -1,30 +1,43 @@
+import 'dart:convert';
+
 import 'package:animated_hint_textfield/animated_hint_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:task2_intern2grow/shared/components/Custom_QuoteFav.dart';
 import '../shared/components/Custom_ElevatedButtonIcon.dart';
 import '../shared/style/color_manager.dart';
 import 'homeScreen.dart';
 
 class FavoriteScreen extends StatefulWidget {
   static const String routeName = 'favoritescreen Screen';
+  final List<Map<String, String>> favoriteQuoteIds; // Add this line
 
-  FavoriteScreen(List<Map<String, String>> favoriteQuoteIds);
+  // Initialize with the list of favorite quotes
+  FavoriteScreen(this.favoriteQuoteIds);
 
   @override
   State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
+  bool isFavorite = true;
+  List<Map<String, String>> favoriteQuotes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadFavoriteQuotes(); // Load favorites from local storage
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(10, 70, 10, 5),
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-            gradient: ColorManager.colorback
-        ),
+        decoration: BoxDecoration(gradient: ColorManager.colorback),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -39,13 +52,16 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   MaterialPageRoute(builder: (context) => HomeScreen()),
                 );
               },
-            ),
-            SizedBox(height: 20),
+            ), //back to home
+            SizedBox(height: 15),
 
-            AnimatedTextField(// Use AnimationType.slide
+            AnimatedTextField(
+              // Use AnimationType.slide
               decoration: InputDecoration(
-                fillColor: Colors.white, // Set background color to white
-                filled: true, // Enable the fill color
+                fillColor: Colors.white,
+                // Set background color to white
+                filled: true,
+                // Enable the fill color
                 hoverColor: ColorManager.colorWhit,
                 border: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -66,104 +82,56 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               hintTexts: [
                 'Type Something Here To Search..',
               ],
-            ),
+            ), //search
 
-            SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: ColorManager.colorWhit,
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '“All I required to be happy was friendship and people I could admire.”',
-                    style: TextStyle(
-                      color: ColorManager.colorblack,
-                      fontFamily: 'Gemunu Libre',
-                      fontSize: 20,
+            Expanded(
+              child: ListView.builder(
+                itemCount: favoriteQuotes.length,
+                itemBuilder: (context, index) {
+                  final quote = favoriteQuotes[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomQuoteFav(
+                      textQuote: quote['content'] ?? '',
+                      textAuthor: quote['authorSlug'] ?? '',
+                      onPressedFav: () {
+                        setState(() {
+                          favoriteQuotes.removeAt(index); // Remove from favorites
+                          saveUpdatedFavorites(); // Update local storage
+                        });
+                      },
+                      icon: Icons.favorite_border_outlined,
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Spacer(),
-                      Text(
-                        '"Christian Dior"',
-                        style: TextStyle(
-                          color: ColorManager.colorblack,
-                          fontFamily: 'Gemunu Libre',
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  CustomElevatedButtonIcon(
-                    colorBorder: ColorManager.Colorpurple,
-                    colorButton: ColorManager.colorWhit,
-                    colorText: ColorManager.Colorpurple,
-                    icon: Icons.favorite_border_outlined,
-                    text: 'Remove From Favorite',
-                    onPressed: () {
-                      // Handle button press
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: ColorManager.colorWhit,
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '“While we stop to think, we often miss our opportunity.”',
-                    style: TextStyle(
-                      color: ColorManager.colorblack,
-                      fontFamily: 'Publilius Syrus',
-                      fontSize: 20,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Spacer(),
-                      Text(
-                        '"Christian Dior"',
-                        style: TextStyle(
-                          color: ColorManager.colorblack,
-                          fontFamily: 'Gemunu Libre',
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  CustomElevatedButtonIcon(
-                    colorBorder: ColorManager.Colorpurple,
-                    colorButton: ColorManager.colorWhit,
-                    colorText: ColorManager.Colorpurple,
-                    icon: Icons.favorite_border_outlined,
-                    text: 'Remove From Favorite',
-                    onPressed: () {
-                      // Handle button press
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> loadFavoriteQuotes() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? favoriteQuotesJson = prefs.getStringList('favoriteQuotes');
+
+    if (favoriteQuotesJson != null) {
+      setState(() {
+        favoriteQuotes = favoriteQuotesJson
+            .map((e) => Map<String, String>.from(jsonDecode(e)))
+            .toList();
+      });
+    } else {
+      setState(() {
+        favoriteQuotes = widget.favoriteQuoteIds; // Use passed favorites if no saved data
+      });
+    }
+  }
+  Future<void> saveUpdatedFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> favoriteQuotesJson =
+    favoriteQuotes.map((e) => jsonEncode(e)).toList();
+    await prefs.setStringList('favoriteQuotes', favoriteQuotesJson);
   }
 }

@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../shared/components/Custom_ElevatedButton.dart';
 import '../shared/components/Custom_quote_home.dart';
 import '../shared/remote/network/QuotesApi.dart';
@@ -26,23 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
     getRandomQuote();
   }
 
-  Future<void> getRandomQuote() async {
-    var quotesApi = QuotesApi();
-    try {
-      var fetchedQuote = await quotesApi.getRandom();
-      setState(() {
-        quote = fetchedQuote;
-        isLoading = false;
-        isFavorite=false;
-      });
-    } catch (e) {
-      print('Failed to load quotes due to: $e');
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -59,10 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => FavoriteScreen(favoriteQuoteIds)),
+                MaterialPageRoute(
+                    builder: (context) => FavoriteScreen(favoriteQuoteIds)),
               );
             },
-          ),//to go fav screen
+          ), //to go fav screen
           Container(
             margin: const EdgeInsets.all(15),
             padding: const EdgeInsets.all(5),
@@ -97,9 +84,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 } else {
                                   // Remove quote from favorites
                                   favoriteQuoteIds.removeWhere(
-                                        (element) => element['id'] == quote!['id'],
+                                    (element) => element['id'] == quote!['id'],
                                   );
                                 }
+                                saveFavoriteQuotes();
                                 print(isFavorite);
                                 print(favoriteQuoteIds);
                               });
@@ -112,5 +100,26 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+  Future<void> getRandomQuote() async {
+    var quotesApi = QuotesApi();
+    try {
+      var fetchedQuote = await quotesApi.getRandom();
+      setState(() {
+        quote = fetchedQuote;
+        isLoading = false;
+        isFavorite = false;
+      });
+    } catch (e) {
+      print('Failed to load quotes due to: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  Future<void> saveFavoriteQuotes() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> favoriteQuotesJson = favoriteQuoteIds.map((e) => jsonEncode(e)).toList();
+    await prefs.setStringList('favoriteQuotes', favoriteQuotesJson);
   }
 }

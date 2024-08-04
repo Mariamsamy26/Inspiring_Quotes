@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:animated_hint_textfield/animated_hint_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +20,20 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
+  bool isSearch = false;
+  List<Map<String, String>> filteredQuotes = [];
+  TextEditingController searchController = TextEditingController();
+  Map<String, String> searchResult = {'content': '', 'authorSlug': ''};
   bool isFavorite = true;
   List<Map<String, String>> favoriteQuotes = [];
 
   @override
   void initState() {
     super.initState();
-    loadFavoriteQuotes(); // Load favorites from local storage
+    loadFavoriteQuotes();
+    searchController.addListener(() {
+      filterQuotes(); // Call filter whenever the search when input in search
+    });
   }
 
   @override
@@ -42,11 +48,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CustomElevatedButtonIcon(
-              coloricon: ColorManager.colorWhit,
+              colorText: ColorManager.colorblack,
+              colorBorder: ColorManager.Colorbabypurple,
+              colorButton: ColorManager.Colorbabypurple,
+              coloricon: ColorManager.colorblack,
               icon: Icons.arrow_back_ios_new_outlined,
               text: 'Click Here To View Favorite Quotes',
               onPressed: () {
-                // Navigate to a different screen or handle logic here
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -54,41 +62,37 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               },
             ), //back to home
             SizedBox(height: 15),
-
             AnimatedTextField(
-              // Use AnimationType.slide
+              controller: searchController, // Update controller name
               decoration: InputDecoration(
-                fillColor: Colors.white,
-                // Set background color to white
+                fillColor: ColorManager.colorWhit,
                 filled: true,
-                // Enable the fill color
                 hoverColor: ColorManager.colorWhit,
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.white,
-                    width: 3,
+                  borderSide: const BorderSide(
+                    color: ColorManager.colorWhit,
+                    width: 5,
                   ),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: Colors.black,
+                    color: ColorManager.colorblack,
                     width: 2,
                   ),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                contentPadding: EdgeInsets.all(12),
+                contentPadding: const EdgeInsets.all(12),
               ),
-              hintTexts: [
+              hintTexts: const [
                 'Type Something Here To Search..',
               ],
             ), //search
-
             Expanded(
               child: ListView.builder(
-                itemCount: favoriteQuotes.length,
+                itemCount: filteredQuotes.length, // Use filtered quotes count
                 itemBuilder: (context, index) {
-                  final quote = favoriteQuotes[index];
+                  final quote = filteredQuotes[index]; // Use filtered quotes
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CustomQuoteFav(
@@ -121,17 +125,31 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         favoriteQuotes = favoriteQuotesJson
             .map((e) => Map<String, String>.from(jsonDecode(e)))
             .toList();
+        filteredQuotes = List.from(favoriteQuotes); // Initialize filtered quotes
       });
     } else {
       setState(() {
         favoriteQuotes = widget.favoriteQuoteIds; // Use passed favorites if no saved data
+        filteredQuotes = List.from(favoriteQuotes); // Initialize filtered quotes
       });
     }
   }
+
   Future<void> saveUpdatedFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> favoriteQuotesJson =
     favoriteQuotes.map((e) => jsonEncode(e)).toList();
     await prefs.setStringList('favoriteQuotes', favoriteQuotesJson);
+  }
+
+  void filterQuotes() {
+    String searchText = searchController.text.toLowerCase(); // Get search text
+    setState(() {
+      filteredQuotes = favoriteQuotes.where((quote) {
+        final content = quote['content']?.toLowerCase() ?? '';
+        final authorSlug = quote['authorSlug']?.toLowerCase() ?? '';
+        return content.contains(searchText) || authorSlug.contains(searchText);
+      }).toList();
+    });
   }
 }

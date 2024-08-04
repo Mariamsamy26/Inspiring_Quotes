@@ -41,6 +41,9 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CustomElevatedButton(
+            colorText: ColorManager.colorblack,
+            colorBorder: ColorManager.Colorbabypurple,
+            colorButton: ColorManager.Colorbabypurple,
             text: 'Click Here To View Favorite Quotes',
             onPressed: () {
               Navigator.push(
@@ -95,12 +98,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       )
-                    : Text('No quotes available.'),
+                    : Text(
+                        'No quotes available.',
+                        style: TextStyle(
+                          color: ColorManager.colorWhit,
+                          fontFamily: 'Gemunu Libre',
+                          fontSize: 20,
+                        ),
+                      ),
           ),
         ],
       ),
     );
   }
+
   Future<void> getRandomQuote() async {
     var quotesApi = QuotesApi();
     try {
@@ -117,9 +128,12 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
+
   Future<void> saveFavoriteQuotes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> favoriteQuotesJson = favoriteQuoteIds.map((e) => jsonEncode(e)).toList();
+    List<String> favoriteQuotesJson =
+        favoriteQuoteIds.map((e) => jsonEncode(e)).toList();
     await prefs.setStringList('favoriteQuotes', favoriteQuotesJson);
   }
+
 }

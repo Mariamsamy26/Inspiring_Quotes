@@ -10,6 +10,7 @@ class ColorManager{
   );
 
   static const Colorpurple= Color.fromRGBO(130, 73, 181, 1);
+  static const Colorbabypurple= Color.fromRGBO(251, 251, 251, 0.7);
   static const Color colorWhit= Color.fromRGBO(251, 251, 251, 1);
   static const Color colorblack= Color.fromRGBO(50, 50, 50, 0.7);
 

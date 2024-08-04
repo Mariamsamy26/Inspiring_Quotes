@@ -101,7 +101,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       onPressedFav: () {
                         setState(() {
                           favoriteQuotes.removeAt(index); // Remove from favorites
-                          saveUpdatedFavorites(); // Update local storage
+                          saveUpdatedFavorites();
+                          loadFavoriteQuotes();// Update local storage
                         });
                       },
                       icon: Icons.favorite_border_outlined,

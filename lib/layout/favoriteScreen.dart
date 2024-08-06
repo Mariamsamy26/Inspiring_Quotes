@@ -10,7 +10,7 @@ import 'homeScreen.dart';
 
 class FavoriteScreen extends StatefulWidget {
   static const String routeName = 'favoritescreen Screen';
-  final List<Map<String, String>> favoriteQuoteIds; // Add this line
+  final List<Map<String, String>> favoriteQuoteIds;
 
   // Initialize with the list of favorite quotes
   FavoriteScreen(this.favoriteQuoteIds);
@@ -65,6 +65,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             AnimatedTextField(
               controller: searchController, // Update controller name
               decoration: InputDecoration(
+                suffix: IconButton(
+                  onPressed: () {
+                    setState(() {});
+                  },
+                  icon: Icon(Icons.highlight_remove_outlined),
+                ),
                 fillColor: ColorManager.colorWhit,
                 filled: true,
                 hoverColor: ColorManager.colorWhit,
@@ -100,9 +106,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       textAuthor: quote['authorSlug'] ?? '',
                       onPressedFav: () {
                         setState(() {
-                          favoriteQuotes.removeAt(index); // Remove from favorites
+                          favoriteQuotes
+                              .removeAt(index); // Remove from favorites
                           saveUpdatedFavorites();
-                          loadFavoriteQuotes();// Update local storage
+                          loadFavoriteQuotes(); // Update local storage
                         });
                       },
                       icon: Icons.favorite_border_outlined,
@@ -126,12 +133,15 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         favoriteQuotes = favoriteQuotesJson
             .map((e) => Map<String, String>.from(jsonDecode(e)))
             .toList();
-        filteredQuotes = List.from(favoriteQuotes); // Initialize filtered quotes
+        filteredQuotes =
+            List.from(favoriteQuotes); // Initialize filtered quotes
       });
     } else {
       setState(() {
-        favoriteQuotes = widget.favoriteQuoteIds; // Use passed favorites if no saved data
-        filteredQuotes = List.from(favoriteQuotes); // Initialize filtered quotes
+        favoriteQuotes =
+            widget.favoriteQuoteIds; // Use passed favorites if no saved data
+        filteredQuotes =
+            List.from(favoriteQuotes); // Initialize filtered quotes
       });
     }
   }
@@ -139,7 +149,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Future<void> saveUpdatedFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> favoriteQuotesJson =
-    favoriteQuotes.map((e) => jsonEncode(e)).toList();
+        favoriteQuotes.map((e) => jsonEncode(e)).toList();
     await prefs.setStringList('favoriteQuotes', favoriteQuotesJson);
   }
 

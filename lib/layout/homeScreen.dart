@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       )
                     : Text(
-                        'No quotes available.',
+                        'sorry No quotes available.',
                         style: TextStyle(
                           color: ColorManager.colorWhit,
                           fontFamily: 'Gemunu Libre',
@@ -116,13 +116,14 @@ class _HomeScreenState extends State<HomeScreen> {
     var quotesApi = QuotesApi();
     try {
       var fetchedQuote = await quotesApi.getRandom();
+      print('Fetched Quote: $fetchedQuote');
       setState(() {
         quote = fetchedQuote;
         isLoading = false;
         isFavorite = false;
       });
     } catch (e) {
-      print('Failed to load quotes due to: $e');
+      print('Failed to load quotes due to: "$e"');
       setState(() {
         isLoading = false;
       });

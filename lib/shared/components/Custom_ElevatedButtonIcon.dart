@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../style/color_manager.dart';
+import 'Custom_ElevatedButton.dart';
 
-class CustomElevatedButtonIcon extends StatelessWidget {
-  final String text;
-  final void Function()? onPressed;
-  final double width;
-  final double height;
-  final Color colorBorder;
-  final Color colorButton;
+class CustomElevatedButtonIcon extends CustomElevatedButton {
   final IconData icon;
   final Color coloricon;
-  final Color colorText;
 
   CustomElevatedButtonIcon({
     required this.icon ,
-    required this.text,
-    required this.onPressed,
-    this.height = 62,
-    this.width = 327,
-    this.colorBorder = ColorManager.colorWhit,
-    this.colorButton = ColorManager.Colorpurple,
-    this.colorText = ColorManager.colorWhit,
     this.coloricon = ColorManager.Colorpurple,
-  });
+    required super.text,
+    required super.onPressed,
+    super.height = 62,
+    super.width = 327,
+    super.colorBorder = ColorManager.colorWhit,
+    super.colorButton = ColorManager.Colorpurple,
+    super.colorText = ColorManager.colorWhit,
+  }
+  );
 
   @override
   Widget build(BuildContext context) {

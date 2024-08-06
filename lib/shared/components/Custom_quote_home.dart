@@ -3,32 +3,25 @@ import 'package:flutter/material.dart';
 import '../style/color_manager.dart';
 import 'Custom_ElevatedButton.dart';
 import 'Custom_ElevatedButtonIcon.dart';
+import 'Custom_QuoteFav.dart';
 
-class CustomQuoteHome extends StatelessWidget {
-  final String textQuote ;
-  final String textAuthor;
+class CustomQuoteHome extends CustomQuoteFav {
+
   final void Function()? onPressed;
-  final Future<void>? Function()? onPressedFav;
-  final double width;
-  final double height;
-  final Color colorBorder;
-  final Color colorButton;
-  final IconData icon;
-  final Color coloricon;
-  final Color colorText;
+
 
   CustomQuoteHome({
-    required this.icon,
-    required this.textQuote,
-    required this.textAuthor,
     required this.onPressed,
-    required this.onPressedFav,
-    this.height = 62,
-    this.width = 327,
-    this.colorBorder = ColorManager.colorWhit,
-    this.colorButton = ColorManager.Colorpurple,
-    this.colorText = ColorManager.colorWhit,
-    this.coloricon = ColorManager.Colorpurple,
+    required super.icon,
+    required super.textQuote,
+    required super.textAuthor,
+    required super.onPressedFav,
+    super.height = 62,
+    super.width = 327,
+    super.colorBorder = ColorManager.colorWhit,
+    super.colorButton = ColorManager.Colorpurple,
+    super.colorText = ColorManager.colorWhit,
+    super.coloricon = ColorManager.Colorpurple,
   });
 
   @override
